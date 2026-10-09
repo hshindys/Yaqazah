@@ -27,6 +27,7 @@
       "notificationsEnabled": true,
       "barFormat": "Countdown",
       "barSeparator": "dot",
+      "shortNames": false,
       "timeFormat": "24-hour"
     },
     "schema": [
@@ -44,6 +45,13 @@
         "label": "Bar widget separator",
         "defaultValue": "dot",
         "description": "Separator between prayer name and timer in the bar (dot, dash, pipe, colon, parens, space, or custom)."
+      },
+      {
+        "key": "shortNames",
+        "type": "boolean",
+        "label": "Short prayer names",
+        "defaultValue": false,
+        "description": "Bar shows single letters (F · D · A · M · I) instead of full prayer names."
       },
       {
         "key": "timeFormat",

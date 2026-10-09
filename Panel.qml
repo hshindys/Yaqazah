@@ -165,8 +165,18 @@ Panel {
   }
 
   readonly property string barLabel: nextPrayer
-    ? formatBarLabel(nextPrayer.name, barTimeText)
+    ? formatBarLabel(root.shortNames ? shortPrayerName(nextPrayer.name) : nextPrayer.name, barTimeText)
     : (loading ? "Prayer …" : "Prayer unavailable")
+
+  // Short bar names (option in settings): single letters so the bar stays
+  // compact. The panel schedule keeps the full names.
+  readonly property bool shortNames: root.settings && root.settings.shortNames === true
+
+  function shortPrayerName(name) {
+    var map = { Fajr: "F", Sunrise: "S", Dhuhr: "D", Asr: "A", Maghrib: "M", Isha: "I" }
+    var key = String(name || "").trim()
+    return map[key] || key
+  }
 
   readonly property var separatorPresets: [
     { id: "dot", label: "·", name: "Dot" },
@@ -1551,6 +1561,60 @@ Panel {
                   preventStealing: true
                   onClicked: root.setBarFormat(optCard.modelData.id)
                 }
+              }
+            }
+
+            Rectangle {
+              width: parent.width
+              implicitHeight: Math.max(Style.space(52), shortCol.implicitHeight + Style.space(16))
+              radius: Style.cornerRadius
+              color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.04)
+              border.width: Style.spacing.hairline
+              border.color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.12)
+
+              Row {
+                anchors.fill: parent
+                anchors.margins: Style.space(8)
+                spacing: Style.space(10)
+
+                Column {
+                  id: shortCol
+                  width: parent.width - Style.space(60)
+                  anchors.verticalCenter: parent.verticalCenter
+                  spacing: Style.space(2)
+
+                  Text {
+                    text: "Short prayer names"
+                    color: root.foreground
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.body
+                    font.bold: true
+                  }
+
+                  Text {
+                    width: parent.width
+                    text: "Bar shows F · D · A · M · I instead of full names."
+                    color: root.dim
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.caption
+                    wrapMode: Text.WordWrap
+                  }
+                }
+
+                ToggleSwitch {
+                  id: shortToggle
+                  anchors.verticalCenter: parent.verticalCenter
+                  checked: root.shortNames
+                  foreground: root.foreground
+                  accent: root.accent
+                  onToggled: root.persistSettings({ shortNames: !checked })
+                }
+              }
+
+              MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.persistSettings({ shortNames: !root.shortNames })
               }
             }
           }
